@@ -1,5 +1,9 @@
 package org.learning;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -19,8 +23,14 @@ public class Main {
 
 
         Scanner scanner = new Scanner(System.in);
+
+
+        File file = new File("./resources/list.txt");
+
         //Istanzio la lista di stringhe vuota
         ArrayList<String> presents = new ArrayList<>();
+        //Leggo il file e assegno se ci sono righe alla lista
+        readFile(file, presents);
         //Variabile regalo
         String present;
         //Variabile scelta
@@ -28,7 +38,7 @@ public class Main {
         do {
         System.out.println("Dimmi il nome del regalo");
         present = scanner.nextLine();
-        //Aggiungo il regalo alla list
+        //Aggiungo il regalo alla lista
         presents.add(present);
         //Stampo la lunghezza della lista
         System.out.println(presents.size());
@@ -40,5 +50,47 @@ public class Main {
         //Ordino e ristampo la lista ordinata
         Collections.sort(presents);
         System.out.println("lista ordinata" + presents);
+        //Invoco il metodo per scrivere sul file
+        writeToFile(file, presents);
+    }
+
+
+    //Metodo per scrivere nel file
+    private static void writeToFile(File file, ArrayList<String> presents) {
+        /*Blocco try-with-resources per gestire la chiusura del FileWriter
+        gestisce automaticamente le risorse che devono essere chiuse
+        dopo che hanno completato la loro attività.
+         */
+        try(FileWriter fileWriter = new FileWriter(file)){
+            //Istanzio fileWriter
+            for (String present : presents) {
+                //Scrivo ogni elemento della lista nel file
+                fileWriter.write(present + "\n");
+            }
+        }catch (IOException e){
+            System.out.println("Unable to open file writer");
+        }
+    }
+
+    //Metodo per leggere il testo del file
+    public static void readFile(File file,ArrayList<String> presents){
+        String line=null;
+        //Blocco try-with-resource
+        try (Scanner scanner = new Scanner(file)) {
+            //Istanzio la variabile del numero di righe contenute nel file
+            int listRows = 0;
+            //Itero su tutte le righe del file
+            while (scanner.hasNextLine()) {
+                line = scanner.nextLine();
+                //Aumento contatore delle righe
+                listRows++;
+            }
+            //Aggiungo le righe come elementi della lista presents
+            for (int i = 0; i < listRows; i++) {
+                presents.add(line);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to read");
+        }
     }
 }
